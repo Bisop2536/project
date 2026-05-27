@@ -43,7 +43,9 @@ class LegalChunker:
 
     def _finalize_metadata(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
         final = metadata.copy()
-        final["page_numbers"] = sorted(list(metadata["page_numbers"]))
-        final["sections"] = sorted(list(metadata["sections"]))
-        final["page"] = final["page_numbers"][0] if final["page_numbers"] else 0
+        # ChromaDB doesn't like lists in metadata well, or empty lists
+        final["page_numbers"] = ",".join(map(str, sorted(list(metadata["page_numbers"]))))
+        sections = sorted(list(metadata["sections"]))
+        final["sections"] = ",".join(sections) if sections else "None"
+        final["page"] = min(metadata["page_numbers"]) if metadata["page_numbers"] else 0
         return final
